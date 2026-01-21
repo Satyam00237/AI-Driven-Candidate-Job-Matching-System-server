@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+// const path = require("path");
 // const pdfjsLib = require("pdfjs-dist/legacy/build/pdf"); // Removed
 
 const Candidate = require("../models/Candidate");
@@ -10,16 +10,16 @@ const { protect } = require("../middleware/auth");
 const router = express.Router();
 
 const upload = multer({
-  dest: path.join(__dirname, "../uploads"),
+  storage: multer.memoryStorage(),
 });
 
 router.post("/upload", protect, upload.single("resume"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    const filePath = path.join(__dirname, "../uploads", req.file.filename);
+    // const filePath = path.join(__dirname, "../uploads", req.file.filename);
     const pdfParse = require("pdf-parse"); // Add this line
-    const dataBuffer = fs.readFileSync(filePath);
+    const dataBuffer = req.file.buffer;
 
     // Extract text using pdf-parse
     const pdfData = await pdfParse(dataBuffer);
@@ -33,7 +33,7 @@ router.post("/upload", protect, upload.single("resume"), async (req, res) => {
       userId: req.user.id,
     });
 
-    fs.unlinkSync(filePath);
+    // fs.unlinkSync(filePath);
     res.json(candidate);
   } catch (err) {
     console.error("Resume Upload Error:", err);
