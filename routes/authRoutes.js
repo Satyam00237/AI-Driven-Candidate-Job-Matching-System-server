@@ -90,10 +90,13 @@ router.get("/me", protect, async (req, res) => {
 // @desc    Logout user / clear cookie
 // @access  Private
 router.post("/logout", protect, (req, res) => {
+    const isProduction = process.env.NODE_ENV === "production";
+
     res.cookie("token", "none", {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
-        sameSite: "Lax",
+        secure: isProduction,
+        sameSite: isProduction ? "None" : "Lax",
     });
 
     res.json({
@@ -112,12 +115,14 @@ const sendTokenResponse = (user, statusCode, res) => {
             Date.now() + (process.env.JWT_COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
         ),
         httpOnly: true,
-        sameSite: "Lax", // Important for local development
     };
 
-    // Set secure flag in production
+    // Set secure flag and sameSite based on environment
     if (process.env.NODE_ENV === "production") {
         options.secure = true;
+        options.sameSite = "None"; // Required for cross-site cookies (Vercel)
+    } else {
+        options.sameSite = "Lax"; // Localhost development
     }
 
     res.status(statusCode).cookie("token", token, options).json({
