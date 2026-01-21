@@ -37,7 +37,10 @@ router.post("/upload", protect, upload.single("resume"), async (req, res) => {
     res.json(candidate);
   } catch (err) {
     console.error("Resume Upload Error:", err);
-    res.status(500).json({ error: "Resume parsing failed" });
+    res.status(500).json({
+      error: "Resume parsing failed",
+      details: err.message // Expose exact error for debugging
+    });
   }
 });
 
