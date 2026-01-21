@@ -5,6 +5,9 @@ const User = require("../models/User");
 exports.protect = async (req, res, next) => {
     let token;
 
+    console.log("Cookies:", req.cookies); // Debug log
+    console.log("Authorization:", req.headers.authorization); // Debug log
+
     // Check for token in cookies or Authorization header
     if (req.cookies.token) {
         token = req.cookies.token;
