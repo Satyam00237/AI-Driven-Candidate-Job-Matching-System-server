@@ -93,6 +93,7 @@ router.post("/logout", protect, (req, res) => {
     res.cookie("token", "none", {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true,
+        sameSite: "Lax",
     });
 
     res.json({
@@ -111,6 +112,7 @@ const sendTokenResponse = (user, statusCode, res) => {
             Date.now() + (process.env.JWT_COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
         ),
         httpOnly: true,
+        sameSite: "Lax", // Important for local development
     };
 
     // Set secure flag in production
