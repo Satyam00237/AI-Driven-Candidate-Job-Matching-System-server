@@ -2,7 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf");
+// const pdfjsLib = require("pdfjs-dist/legacy/build/pdf"); // Removed
+
 const Candidate = require("../models/Candidate");
 const { protect } = require("../middleware/auth");
 
@@ -17,16 +18,12 @@ router.post("/upload", protect, upload.single("resume"), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
     const filePath = path.join(__dirname, "../uploads", req.file.filename);
-    const data = new Uint8Array(fs.readFileSync(filePath));
+    const pdfParse = require("pdf-parse"); // Add this line
+    const dataBuffer = fs.readFileSync(filePath);
 
-    const pdf = await pdfjsLib.getDocument({ data }).promise;
-
-    let text = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      text += content.items.map((it) => it.str).join(" ") + " ";
-    }
+    // Extract text using pdf-parse
+    const pdfData = await pdfParse(dataBuffer);
+    const text = pdfData.text;
 
     // Auto-fill name and email from logged-in user
     const candidate = await Candidate.create({
