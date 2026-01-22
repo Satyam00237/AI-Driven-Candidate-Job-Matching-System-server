@@ -317,4 +317,8 @@ For issues or questions, please open an issue on GitHub or contact the maintaine
 
 ---
 
+## Frontend Repository
+Client UI: https://github.com/Satyam00237/AI-Driven-Candidate-Job-Matching-System
+
+
 **Made with ❤️ using React, Node.js, and Google Gemini AI**
